@@ -20,14 +20,22 @@ public static class DefaultResources
     public static byte START_GAME_EVENT = 0;
 
 
-    private static BattleCard[] _allCards = null;
-    public static BattleCard[] AllCards
+    private static object[] _allCards = null;
+    public static object[] AllCards
     {
         get
         {
             if (_allCards == null)
             {
-                _allCards = Resources.LoadAll<BattleCard>("Cards");
+                EcnounterCard[] encounterCards  = Resources.LoadAll<EcnounterCard>("Cards");
+                BattleCard[] battleCards = Resources.LoadAll<BattleCard>("Cards");
+                EventCard[] eventsCards = Resources.LoadAll<EventCard>("Cards");
+
+                List<object> cards = new List<object>();
+                cards.AddRange(encounterCards);
+                cards.AddRange(battleCards);
+                cards.AddRange(eventsCards);
+                _allCards = cards.ToArray();
             }
             return _allCards;
         }
@@ -50,14 +58,14 @@ public static class DefaultResources
         return AllClasses[id];
     }
 
-    public static int GetCardId(BattleCard card)
+    public static int GetCardId(ICard card)
     {
         return AllCards.ToList().IndexOf(card);
     }
 
-    public static BattleCard GetCardById(int i)
+    public static ICard GetCardById(int i)
     {
-        return AllCards[i];
+        return ((ICard)AllCards[i]);
     }
 
 

@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System;
+using UnityEngine.UI;
 
 public class CardsLayout : MonoBehaviour
 {
     public bool StaticSlot = false;
-    public Vector3 FocusDelta;
+    [Range(0,1f)]
+    public float FocusDelta;
 	private List<Transform> CardsSiblings = new List<Transform>();
     private Vector2 _cardSize = Vector2.zero;
     private Vector2 cardSize
@@ -16,7 +18,7 @@ public class CardsLayout : MonoBehaviour
         {
             if (_cardSize == Vector2.zero)
             {
-                _cardSize = FindObjectOfType<CardBehaviour>().GetComponent<RectTransform>().rect.size;
+                _cardSize = GetComponentInChildren<CardBehaviour>().Size;
             }
             return _cardSize;
         }
@@ -35,18 +37,7 @@ public class CardsLayout : MonoBehaviour
 			return cv;
 		}
 	}
-    private RectTransform _rectTransform;
-    private RectTransform rectTransform
-    {
-        get
-        {
-            if (!_rectTransform)
-            {
-                _rectTransform = GetComponent<RectTransform>();
-            }
-            return _rectTransform;
-        }
-    }
+    
 
     public float rotOffset = 3;
     public float maxRot = 20;
@@ -118,23 +109,19 @@ public class CardsLayout : MonoBehaviour
         }
         return aimRotation;
     }
-    public Vector3 GetPosition(CardBehaviour cardVisual, bool focused = false)
+    public Vector3 GetPosition(CardBehaviour cardVisual)
     {
 
         if (StaticSlot)
         {
-            if (GetComponent<GridLayout>())
-            {
-                return cardVisual.transform.localPosition;
-            }
             return Vector3.zero;
         }
 
         float yMultiplyer = 1f / 10000;
         int cards = transform.childCount;
-        float fieldWidth = GetComponent<RectTransform>().rect.width;
-		float cardWidth = cardSize.x;
-		float offset = Mathf.Min(cardWidth, fieldWidth/cards)+gap;
+   
+		float cardWidth = cardSize.x+gap;
+		float offset = cardWidth;
 
         Vector3 aimPosition = Vector3.zero;
         int childId = CardsSiblings.IndexOf(cardVisual.transform);
@@ -144,14 +131,11 @@ public class CardsLayout : MonoBehaviour
         float yPos = -Mathf.Pow(minOffset + childId * offset, 2) * yMultiplyer;
         aimPosition = new Vector3(minOffset+childId*offset, yPos);
 
-
-
-        if (focused)
+        if (cardVisual.Focused)
         {
-            aimPosition += FocusDelta;
+            aimPosition += (Camera.main.transform.position - cardVisual.transform.position) * FocusDelta;
         }
 
-        aimPosition = new Vector3(aimPosition.x, aimPosition.y, aimPosition.z);
 
         return aimPosition;
     }

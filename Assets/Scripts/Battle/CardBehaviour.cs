@@ -5,8 +5,11 @@ using UnityEngine;
 
 public class CardBehaviour : MonoBehaviour {
 
-    private static float _movementSpeed = 0.3f;
-    private static float _scaleSpeed = 0.2f;
+    private Billboard _billboard;
+    private static float _movementSpeed = 1f;
+    private static float _scaleSpeed = 0.01f;
+
+    private bool _focused = false;
 
     private bool _open = true;
     public bool Open
@@ -25,19 +28,54 @@ public class CardBehaviour : MonoBehaviour {
         }
     }
 
+    public bool Focused
+    {
+        get
+        {
+            return _focused;
+        }
+        set
+        {
+            if (_focused == value)
+            {
+                return;
+            }
+            _billboard.enabled = value;
+            _focused = value;
+            Reposition();
+        }
+    }
+
+    public Vector2 Size
+    {
+        get
+        {
+            return GetComponentInChildren<BoxCollider>().transform.lossyScale;
+        }
+    }
+
     private void Reposition()
     {
-        
+        CardsLayout layout = GetComponentInParent<CardsLayout>();
+        if (layout)
+        {
+            Reposition(layout);
+        }
     }
 
     private void Start()
     {
         GetComponentInChildren<CardCollider>().OnClicked += CardClicked;
         GetComponentInChildren<CardCollider>().OnFocusChanged += FocusChanged;
+        _billboard = gameObject.AddComponent<Billboard>();
+        _billboard.enabled = false;
     }
 
     private void FocusChanged(bool val)
     {
+        Focused = val;
+
+        /*
         if (val)
         {
             CardsLayoutManager.Instance.FocusedCard = this;
@@ -46,6 +84,7 @@ public class CardBehaviour : MonoBehaviour {
         {
             CardsLayoutManager.Instance.FocusedCard = null;
         }
+        */
     }
 
     private void CardClicked()
@@ -93,6 +132,7 @@ public class CardBehaviour : MonoBehaviour {
 
     private void MoveCardTo(CardsLayout parent, Vector3 localScale, Action callback = null)
     {
+        Debug.Log("rep");
         Vector3 localPosition = GetPosition(parent);
         Quaternion localRotation = GetRotation(parent);
 
