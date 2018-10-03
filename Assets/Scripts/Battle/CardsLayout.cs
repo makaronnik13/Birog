@@ -117,7 +117,7 @@ public class CardsLayout : MonoBehaviour
             return Vector3.zero;
         }
 
-        float yMultiplyer = 1f / 10000;
+
         int cards = transform.childCount;
    
 		float cardWidth = cardSize.x+gap;
@@ -128,12 +128,12 @@ public class CardsLayout : MonoBehaviour
         
         float minOffset = -(cards - 1) * offset / 2;
 
-        float yPos = -Mathf.Pow(minOffset + childId * offset, 2) * yMultiplyer;
+        float yPos = 0;
         aimPosition = new Vector3(minOffset+childId*offset, yPos);
 
         if (cardVisual.Focused)
         {
-            aimPosition += (Camera.main.transform.position - cardVisual.transform.position) * FocusDelta;
+            aimPosition = Vector3.Lerp(aimPosition, transform.InverseTransformPoint(Camera.main.transform.position), FocusDelta);
         }
 
 

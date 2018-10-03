@@ -9,7 +9,8 @@ public class CardVisual : MonoBehaviour {
     public TextMeshProUGUI Title, Description;
     public Image CardImg;
 
-    private ICard _card;
+
+private ICard _card;
 
 	public void Init(ICard card)
     {
@@ -17,6 +18,7 @@ public class CardVisual : MonoBehaviour {
         Title.text = card.CardName();
         Description.text = card.CardDescription();
         CardImg.sprite = card.CardImage();
+
     }
 
     /*

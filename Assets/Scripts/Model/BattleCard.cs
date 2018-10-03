@@ -15,7 +15,7 @@ public class BattleCard : ScriptableObject, ICard
 
 
     public CardStats.CardType CardType;
-    public Dictionary<CardStats.Resources, int> Resources;
+    public List<ResourcePair> Resources;
 
     public string CardDescription()
     {

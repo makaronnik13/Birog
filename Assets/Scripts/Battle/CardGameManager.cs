@@ -227,10 +227,6 @@ public class CardGameManager : MonoBehaviourPunCallbacks, IOnEventCallback
         {
             BattlerClass battler = DefaultResources.GetClassById((int)p.CustomProperties[DefaultResources.PLAYER_CLASS]);
 
-            foreach (BattleCard card in battler.Hand)
-            {
-                GiveCardTo(card, p, CardPosition.Hand);
-            }
 
 
             foreach (BattleCard card in battler.Deck)

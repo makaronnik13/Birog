@@ -11,7 +11,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50d7e7f241d4c32428966d1e4206ca87, type: 3}
   m_Name: B10
   m_EditorClassIdentifier: 
-  CardName: 
-  Image: {fileID: 0}
-  Description: 
-  CardType: 0
+  CardName: 4tne4tn4e
+  Image: {fileID: 21300008, guid: 961dd7189a42b0a4281637922fdc48ce, type: 3}
+  Description: q46mm
+  CardType: 1
+  Resources: []

@@ -11,28 +11,36 @@ using Photon.Pun;
 public class BattleCardVisual : CardVisual
 {
     private int _lastSibling;
-   
+
     private bool _hovered = false;
     private Transform _oldParentTransform;
 
-    public TextMeshProUGUI CardType;
+    
     public RectTransform ResourcesSlot;
-
+    public Image[] ColoringPanels;
 
     public void Init(BattleCard card, bool show)
     {
         base.Init(card);
 
-        CardType.text = card.CardType.ToString();
+        Debug.Log(card.Resources.Count);
 
-        foreach (KeyValuePair<CardStats.Resources, int> val in card.Resources)
+        foreach (ResourcePair val in card.Resources)
         {
-            for (int i = 0; i< val.Value;i++)
+            Debug.Log(val.Value);
+
+            for (int i = 0; i < val.Value; i++)
             {
                 GameObject resourceIcon = Instantiate(DefaultResources.GetPrefab(DefaultResources.PrefabType.ResourceIcon));
-                resourceIcon.GetComponent<ResourceIcon>().Init(val.Key,ResourcesSlot);          
+                resourceIcon.GetComponent<ResourceIcon>().Init(val.Resource, ResourcesSlot);
+                resourceIcon.transform.localRotation = Quaternion.identity;
             }
-            
+
+        }
+
+        foreach (Image panel in ColoringPanels)
+        {
+            panel.color = DefaultResources.GetCardColor(((BattleCard)card).CardType);
         }
     }
 
@@ -57,16 +65,16 @@ public class BattleCardVisual : CardVisual
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (_lastSibling!=-1)
+        if (_lastSibling != -1)
         {
             transform.SetSiblingIndex(_lastSibling);
         }
-        
+
         _hovered = false;
         //Reposition(GetComponentInParent<CardsLayout>());
     }
 
-    
+
 
 
 

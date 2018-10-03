@@ -11,9 +11,28 @@ public static class DefaultResources
 
     public static string PLAYER_LIVES = "PlayerLives";
     public static string PLAYER_CHOOSED_CARDS = "PlayerFinishedTurn";
+
     public static string PLAYER_CHOOSED_CARDS_TO_ATACK = "PlayerChoosedCardsToAtack";
     public static string PLAYER_HAND = "PlayerHand";
     public static string PLAYER_DECK = "PlayerDeck";
+
+
+    private static Dictionary<CardStats.CardType, Color> _typesColors = new Dictionary<CardStats.CardType, Color>()
+    {
+        {CardStats.CardType.Cloth, new Color(0.3f, 0.8f, 0.3f, 0.5f)},
+        {CardStats.CardType.Gun, new Color(0.7f, 0.3f, 0.3f, 0.5f)},
+        {CardStats.CardType.Minion, new Color(0.6f, 0.6f, 0.4f, 0.5f)},
+        {CardStats.CardType.Skill, new Color(0.3f, 0.3f, 0.7f, 0.5f)},
+        {CardStats.CardType.Spell, new Color(0.6f, 0.2f, 0.6f, 0.5f)},
+        {CardStats.CardType.Tools, new Color(0.4f, 0.4f, 0.4f, 0.5f)},
+
+    };
+
+    public static Color GetCardColor(CardStats.CardType cardType)
+    {
+        return _typesColors[cardType];
+    }
+
     public static string PLAYER_DROP = "PlayerDrop";
 
     //events codes
@@ -72,9 +91,10 @@ public static class DefaultResources
     public enum PrefabType
     {
         BattleCard,
+        Deck,
         EventCard,
-        EncounterCard,
-        ResourceIcon
+        ResourceIcon,
+        EncounterCard
     }
 
     private static List<GameObject> _prefabs = new List<GameObject>();
@@ -84,7 +104,7 @@ public static class DefaultResources
         {
             if (_prefabs.Count == 0)
             {
-                _prefabs = Resources.LoadAll<GameObject>("").ToList();
+                _prefabs = Resources.LoadAll<GameObject>("Prefabs").ToList();
             }
             return _prefabs;
         }

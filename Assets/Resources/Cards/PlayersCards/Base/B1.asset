@@ -11,7 +11,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50d7e7f241d4c32428966d1e4206ca87, type: 3}
   m_Name: B1
   m_EditorClassIdentifier: 
-  CardName: 
-  Image: {fileID: 0}
-  Description: 
+  CardName: eswgsg
+  Image: {fileID: 21300012, guid: 961dd7189a42b0a4281637922fdc48ce, type: 3}
+  Description: eeee
   CardType: 0
+  Resources:
+  - Resource: 2
+    Value: 1
+  - Resource: 1
+    Value: 2

@@ -7,7 +7,7 @@ public class CardBehaviour : MonoBehaviour {
 
     private Billboard _billboard;
     private static float _movementSpeed = 1f;
-    private static float _scaleSpeed = 0.01f;
+    private static float _scaleSpeed = 1f;
 
     private bool _focused = false;
 
@@ -132,7 +132,6 @@ public class CardBehaviour : MonoBehaviour {
 
     private void MoveCardTo(CardsLayout parent, Vector3 localScale, Action callback = null)
     {
-        Debug.Log("rep");
         Vector3 localPosition = GetPosition(parent);
         Quaternion localRotation = GetRotation(parent);
 

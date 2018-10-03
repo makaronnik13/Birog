@@ -16,18 +16,19 @@ public class CardInspector : Editor
     {
         _card = (BattleCard)target;
 
-        _bonusesList = new ReorderableList(serializedObject, serializedObject.FindProperty("BonusAtack"));
+        _bonusesList = new ReorderableList(serializedObject, serializedObject.FindProperty("Resources"));
 
         _bonusesList.drawHeaderCallback = (Rect rect) =>
         {
-            EditorGUI.LabelField(rect, "bonuses");
+            EditorGUI.LabelField(rect, "resources");
         };
 
+        
         _bonusesList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
         {
-        
+            _card.Resources[index].Resource = (CardStats.Resources)EditorGUI.EnumPopup(new Rect(rect.position, new Vector2(rect.width/2-2, rect.height)), _card.Resources[index].Resource);
+            _card.Resources[index].Value = EditorGUI.IntSlider(new Rect(rect.position+Vector2.right* (rect.width/2), new Vector2(rect.width/2 - 5, rect.height)), _card.Resources[index].Value, 0, 5);
         };
-
     }
 
     public override void OnInspectorGUI()
@@ -37,6 +38,8 @@ public class CardInspector : Editor
         _card.Image = (Sprite)EditorGUILayout.ObjectField(_card.Image, typeof(Sprite), false, GUILayout.Width(150), GUILayout.Height(150));
         _card.CardType = (CardStats.CardType)EditorGUILayout.EnumPopup("CardType", _card.CardType); 
         _card.Description = EditorGUILayout.TextArea(_card.Description, GUILayout.Height(50));
+
+        _bonusesList.DoLayoutList();
 
         if (GUI.changed)
         {

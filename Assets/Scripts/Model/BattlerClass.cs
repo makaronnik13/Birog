@@ -7,7 +7,5 @@ public class BattlerClass : ScriptableObject
     public Sprite BattlerImage;
     public int Hp;
     public string Description;
-    public BattleCard[] Hand;
     public BattleCard[] Deck;
-    public Color BattlerColor;
 }
