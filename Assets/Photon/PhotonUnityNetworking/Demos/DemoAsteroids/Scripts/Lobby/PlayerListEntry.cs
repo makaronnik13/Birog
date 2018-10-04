@@ -14,20 +14,38 @@ using UnityEngine.UI;
 using ExitGames.Client.Photon;
 using Photon.Realtime;
 using Photon.Pun.UtilityScripts;
+using System;
+using Photon.Pun;
 
-namespace Photon.Pun.Demo.Asteroids
-{
-    public class PlayerListEntry : MonoBehaviour
+public class PlayerListEntry : MonoBehaviour
     {
         [Header("UI References")]
         public TMPro.TextMeshProUGUI PlayerNameText;
         public TMPro.TextMeshProUGUI PlayerClassText;
 
         public Image PlayerClassImage;
-       
+
+        private Material _glowMaterial;
+        private Material glowMaterial
+        {
+            get
+            {
+                if (!_glowMaterial)
+                {
+                    _glowMaterial = GetComponent<Image>().material;
+                }
+                return _glowMaterial;
+            }
+        }
 
         private int ownerId;
-      
+        public int OwnerId
+        {
+            get
+            {
+                return ownerId;
+            }
+        }
 
         #region UNITY
 
@@ -40,7 +58,7 @@ namespace Photon.Pun.Demo.Asteroids
         {
             if (PhotonNetwork.LocalPlayer.ActorNumber == ownerId)
             {
-                    Hashtable props = new Hashtable() {{AsteroidsGame.PLAYER_READY, true}};
+                    Hashtable props = new Hashtable() {{DefaultResources.PLAYER_IS_READY, false}};
                     PhotonNetwork.LocalPlayer.SetCustomProperties(props);
 
                     if (PhotonNetwork.IsMasterClient)
@@ -74,10 +92,20 @@ namespace Photon.Pun.Demo.Asteroids
             {
                 if (p.ActorNumber == ownerId)
                 {
-                    PlayerClassImage.color = AsteroidsGame.GetColor(p.GetPlayerNumber());
+                    //PlayerClassImage.color = AsteroidsGame.GetColor(p.GetPlayerNumber());
                 }
             }
         }
 
+        public void ChangeReadyState(bool v)
+        {
+            if (v)
+            {
+                glowMaterial.color = Color.green;
+            }
+            else
+            {
+                glowMaterial.color = Color.red;
+            }
+        }
     }
-}

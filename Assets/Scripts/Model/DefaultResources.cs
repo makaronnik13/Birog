@@ -8,7 +8,7 @@ public static class DefaultResources
     //player custom properties keys
     public static string PLAYER_LOADED_LEVEL = "LevelLoaded";
     public static string PLAYER_CLASS = "PlayerClass";
-
+    public static string PLAYER_IS_READY = "PlayerIsReady";
     public static string PLAYER_LIVES = "PlayerLives";
     public static string PLAYER_CHOOSED_CARDS = "PlayerFinishedTurn";
 

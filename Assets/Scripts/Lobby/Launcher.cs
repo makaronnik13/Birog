@@ -12,25 +12,25 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Photon.Realtime;
-using Photon.Pun.Demo.Asteroids;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
+using System;
 
 namespace Photon.Pun.Demo.PunBasics
 {
     /// <summary>
     /// Launch manager. Connect, join a random room or create one if none or all full.
     /// </summary>
-	public class Launcher : MonoBehaviourPunCallbacks
+	public class Launcher : MonoBehaviourPunCallbacks 
     {
 
         #region Private Serializable Fields
         public string BattleLevelName;
         public TMP_InputField NameInputField;
         public Counter Counter;
-        public TextMeshProUGUI WaitingText;
         [Header("Inside Room Panel")]
         public GameObject InsideRoomPanel;
         public GameObject PlayerListEntryPrefab;
+        public Button ReadyButton;
 
         [Tooltip("The Ui Panel to let the user enter name, connect and play")]
 		[SerializeField]
@@ -69,7 +69,7 @@ namespace Photon.Pun.Demo.PunBasics
 			// #Critical
 			// this makes sure we can use PhotonNetwork.LoadLevel() on the master client and all clients in the same room sync their level automatically
 			PhotonNetwork.AutomaticallySyncScene = true;
-            NameInputField.text = "Игрок" + Random.Range(0,999);
+            NameInputField.text = "Игрок" + UnityEngine.Random.Range(0,999);
 
         }
 
@@ -94,8 +94,7 @@ namespace Photon.Pun.Demo.PunBasics
 			// hide the Play button for visual consistency
 			controlPanel.SetActive(false);
             InsideRoomPanel.SetActive(true);
-
-           
+            
 			// we check if we are connected or not, we join if we are , else we initiate the connection to the server.
 			if (PhotonNetwork.IsConnected)
 			{
@@ -112,7 +111,64 @@ namespace Photon.Pun.Demo.PunBasics
 			}
 		}
 
+        public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+        {
+            if (changedProps.ContainsKey(DefaultResources.PLAYER_IS_READY))
+            {
+                if (targetPlayer == PhotonNetwork.LocalPlayer)
+                {
+                    Debug.Log((bool)changedProps[DefaultResources.PLAYER_IS_READY]);
+                    if ((bool)changedProps[DefaultResources.PLAYER_IS_READY])
+                    {
+                        ReadyButton.GetComponent<Image>().color = Color.green;
+                        ReadyButton.GetComponentInChildren<TextMeshProUGUI>().text = "не готов";
+                    }
+                    else
+                    {
+                        ReadyButton.GetComponent<Image>().color = Color.white;
+                        ReadyButton.GetComponentInChildren<TextMeshProUGUI>().text = "готов";
+                    }
+                }
 
+                foreach (PlayerListEntry entry in FindObjectsOfType<PlayerListEntry>())
+                {
+                    if (entry.OwnerId == targetPlayer.ActorNumber)
+                    {
+                        entry.ChangeReadyState((bool)changedProps[DefaultResources.PLAYER_IS_READY]);
+                    }
+                }
+            }
+
+
+
+
+            if (!PhotonNetwork.IsMasterClient)
+            {
+                return;
+            }
+
+            if (changedProps.ContainsKey(DefaultResources.PLAYER_IS_READY))
+            {
+                if (CheckAllPlayerLoadedLevel())
+                {
+                    ReadyButton.gameObject.SetActive(false);
+                    Counter.StartCount(3, () => { PhotonNetwork.LoadLevel(BattleLevelName); });
+                }
+            }
+        }
+
+        private bool CheckAllPlayerLoadedLevel()
+        {
+            foreach (Player player in PhotonNetwork.PlayerList)
+            {
+                if (!(bool)player.CustomProperties[DefaultResources.PLAYER_IS_READY])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
         #endregion
 
 
@@ -189,12 +245,13 @@ namespace Photon.Pun.Demo.PunBasics
                 GameObject entry = Instantiate(PlayerListEntryPrefab);
                 entry.transform.SetParent(InsideRoomPanel.transform);
                 entry.transform.localScale = Vector3.one;
+                entry.transform.localPosition = Vector3.zero;
                 entry.GetComponent<PlayerListEntry>().Initialize(p.ActorNumber, p.NickName);
             }
 
             props = new Hashtable
             {
-                {AsteroidsGame.PLAYER_LOADED_LEVEL, false}
+                {DefaultResources.PLAYER_IS_READY, false}
             };
             PhotonNetwork.LocalPlayer.SetCustomProperties(props);
 
@@ -203,11 +260,13 @@ namespace Photon.Pun.Demo.PunBasics
             if (PhotonNetwork.CurrentRoom.PlayerCount == PhotonNetwork.CurrentRoom.MaxPlayers)
 			{
                 // #Critical
-                // Load the Room Level. 
-                WaitingText.enabled = false;
+                // Load the Room Level.
+                ReadyButton.gameObject.SetActive(false);
                 Counter.StartCount(3, ()=> { PhotonNetwork.LoadLevel(BattleLevelName); });
 			}
-		}
+
+            ReadyButton.gameObject.SetActive(true);
+        }
 
         public override void OnPlayerEnteredRoom(Player other)
         {
@@ -216,9 +275,18 @@ namespace Photon.Pun.Demo.PunBasics
             GameObject entry = Instantiate(PlayerListEntryPrefab);
             entry.transform.SetParent(InsideRoomPanel.transform);
             entry.transform.localScale = Vector3.one;
+            entry.transform.localPosition = Vector3.zero;
             entry.GetComponent<PlayerListEntry>().Initialize(other.ActorNumber, other.NickName);
         }
         #endregion
 
+        public void ChangeReadyState()
+        {
+            Hashtable props = new Hashtable
+            {
+                {DefaultResources.PLAYER_IS_READY, !(bool)PhotonNetwork.LocalPlayer.CustomProperties[DefaultResources.PLAYER_IS_READY]}
+            };
+            PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+        }
     }
 }
