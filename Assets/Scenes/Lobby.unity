@@ -3292,7 +3292,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4796bc1963eb34e1fa021b0a45b29df4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BattleLevelName: Battle
+  BattleLevelName: Board
   NameInputField: {fileID: 1773822099}
   Counter: {fileID: 382166150}
   InsideRoomPanel: {fileID: 613146024}
@@ -3300,7 +3300,7 @@ MonoBehaviour:
     type: 2}
   ReadyButton: {fileID: 100595569}
   controlPanel: {fileID: 861632533}
-  maxPlayersPerRoom: 2
+  maxPlayersPerRoom: 4
 --- !u!1 &912094638
 GameObject:
   m_ObjectHideFlags: 0
