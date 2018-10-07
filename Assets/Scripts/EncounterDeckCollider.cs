@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EncounterDeck : MonoBehaviour {
+public class EncounterDeckCollider : MonoBehaviour {
 
 	// Use this for initialization
 	void Start ()
@@ -13,7 +13,7 @@ public class EncounterDeck : MonoBehaviour {
 
     private void DeckClicked()
     {
-           
+        ClientController.Instance.PlayerClickedOnDeck(this);
     }
  
 }

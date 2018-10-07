@@ -37,11 +37,11 @@ public class CardStats
 {
     public enum Resources
     {
-        Knowlege,
-        Faith,
-        Force,
-        Loot,
-        Skill
+        Tooth,
+        Blood,
+        Shroom,
+        Mutations,
+        Parasite
     }
 
     public enum CardType

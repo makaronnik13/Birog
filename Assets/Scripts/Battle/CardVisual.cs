@@ -10,7 +10,7 @@ public class CardVisual : MonoBehaviour {
     public Image CardImg;
 
 
-private ICard _card;
+    protected ICard _card;
 
 	public void Init(ICard card)
     {
@@ -20,16 +20,4 @@ private ICard _card;
         CardImg.sprite = card.CardImage();
 
     }
-
-    /*
-    void IPunInstantiateMagicCallback.OnPhotonInstantiate(PhotonMessageInfo info)
-    {
-        // e.g. store this gameobject as this player's charater in PhotonPlayer.TagObject
-        BattleCard c = DefaultResources.GetCardById((int)photonView.InstantiationData[0]);
-        bool show = photonView.Owner == PhotonNetwork.LocalPlayer;
-        CardGameManager.CardPosition position = (CardGameManager.CardPosition)((int)photonView.InstantiationData[1]);
-
-        Init(c, position, show);
-    }
-    */
 }

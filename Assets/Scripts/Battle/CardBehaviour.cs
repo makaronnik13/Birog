@@ -6,12 +6,15 @@ using UnityEngine;
 public class CardBehaviour : MonoBehaviour {
 
     private Billboard _billboard;
-    private static float _movementSpeed = 1f;
+    private static float _movementSpeed = 0.1f;
     private static float _scaleSpeed = 1f;
 
     private bool _focused = false;
 
+ 
     private bool _open = true;
+    private Action _callback;
+
     public bool Open
     {
         get
@@ -50,7 +53,7 @@ public class CardBehaviour : MonoBehaviour {
     {
         get
         {
-            return GetComponentInChildren<BoxCollider>().transform.lossyScale;
+            return GetComponentInChildren<BoxCollider>().transform.localScale;
         }
     }
 
@@ -92,11 +95,11 @@ public class CardBehaviour : MonoBehaviour {
         
     }
 
-    public void Reposition(CardsLayout layout)
+    public void Reposition(CardsLayout layout, Action callback = null)
     {
         Vector3 scale = Vector3.one;
  
-        MoveCardTo(layout, () => { });
+        MoveCardTo(layout, callback);
     }
 
     public Vector3 GetPosition(CardsLayout layout)
@@ -149,6 +152,11 @@ public class CardBehaviour : MonoBehaviour {
 
     private IEnumerator MoveCardToCoroutine(Transform parent, Vector3 localPosition, Quaternion localRotation, Vector3 localScale, Action callback = null)
     {
+        if (callback!=null)
+        {
+            _callback = callback;
+        }
+       
         transform.SetParent(parent);
         float time = 0.0f;
         float speed = Mathf.Max(_movementSpeed, _scaleSpeed);
@@ -175,9 +183,11 @@ public class CardBehaviour : MonoBehaviour {
         transform.localRotation = localRotation;
         transform.localScale = localScale;
 
-        if (callback != null)
+        if (_callback != null)
         {
-            callback.Invoke();
+            Debug.Log("With callback!");
+            _callback.Invoke();
+            _callback = null;
         }
     }
 }

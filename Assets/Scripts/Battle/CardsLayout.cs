@@ -8,9 +8,15 @@ using UnityEngine.UI;
 public class CardsLayout : MonoBehaviour
 {
     public bool StaticSlot = false;
+    public bool Fit = false;
+
     [Range(0,1f)]
     public float FocusDelta;
-	private List<Transform> CardsSiblings = new List<Transform>();
+    public Vector3 FocusOffset;
+
+    private Dictionary<CardBehaviour, Action> callbacks = new Dictionary<CardBehaviour, Action>();
+
+    private List<Transform> CardsSiblings = new List<Transform>();
     private Vector2 _cardSize = Vector2.zero;
     private Vector2 cardSize
     {
@@ -43,47 +49,69 @@ public class CardsLayout : MonoBehaviour
     public float maxRot = 20;
 	public float gap = 0;
 
+    private bool _shoundReposition = false;
+
     public Action<CardBehaviour> OnCardAddedToLayout = (cv) => { };
     public Action<CardBehaviour> OnCardRemovedFromLayout = (cv) => { };
+
+    private void Start()
+    {
+        InvokeRepeating("CardsReposition", 0, 0.1f);
+    }
 
     public int GetCardSibling(CardBehaviour cv)
 	{
 		return CardsSiblings.IndexOf(cv.transform);
 	}
-	public void AddCardToLayout(CardBehaviour visual)
+	public void AddCardToLayout(CardBehaviour visual, Action callback = null)
 	{
+        if (callback!=null)
+        {
+            callbacks.Add(visual, callback);
+        }
+        
+
         if (CardsSiblings.Contains(visual.transform))
         {
             visual.transform.SetSiblingIndex(CardsSiblings.IndexOf(visual.transform));
         }
 		else
 		{
-            visual.transform.SetParent(transform);
-            
+            visual.transform.SetParent(transform);         
             OnCardAddedToLayout.Invoke(visual);
             CardsSiblings.Add (visual.transform);
         }
-        CardsReposition();
+
+        _shoundReposition = true;
     }
 	public void RemoveCardFromLayout(CardBehaviour visual)
-	{
-       
+	{     
         if (CardsSiblings.Contains(visual.transform))
         {
             visual.transform.SetParent(null);
             OnCardRemovedFromLayout(visual);
             CardsSiblings.Remove(visual.transform);
         }
-        CardsReposition();
+        _shoundReposition = true;
     }
 
-    [ContextMenu("Reposition")]
 	public void CardsReposition()
 	{
-		foreach(Transform pair in CardsSiblings)
-		{
-            pair.GetComponent<CardBehaviour>().Reposition(this);
-		}
+        if (_shoundReposition)
+        {
+            foreach (Transform pair in CardsSiblings)
+            {
+                Action callback = null;
+                CardBehaviour cardBehaviour = pair.GetComponent<CardBehaviour>();
+                if (callbacks.ContainsKey(cardBehaviour))
+                {
+                    callback = callbacks[cardBehaviour];
+                    callbacks.Remove(cardBehaviour);
+                }
+                cardBehaviour.Reposition(this, callback);
+            }
+            _shoundReposition = false;
+        }
 	}
 
     public Quaternion GetRotation(CardBehaviour cardVisual, bool focused = false)
@@ -104,23 +132,22 @@ public class CardsLayout : MonoBehaviour
 
             if (!focused)
             {
-                aimRotation = Quaternion.Euler(new Vector3(0, 0, -rot));
+                aimRotation = Quaternion.Euler(new Vector3(0, rot, 0));
             }
         }
         return aimRotation;
     }
     public Vector3 GetPosition(CardBehaviour cardVisual)
     {
-
-        if (StaticSlot)
-        {
-            return Vector3.zero;
-        }
-
-
         int cards = transform.childCount;
    
 		float cardWidth = cardSize.x+gap;
+
+        if (Fit)
+        {
+            cardWidth = Mathf.Min(cardWidth, GetComponent<RectTransform>().rect.width/cards);
+        }
+
 		float offset = cardWidth;
 
         Vector3 aimPosition = Vector3.zero;
@@ -129,14 +156,29 @@ public class CardsLayout : MonoBehaviour
         float minOffset = -(cards - 1) * offset / 2;
 
         float yPos = 0;
-        aimPosition = new Vector3(minOffset+childId*offset, yPos);
+        aimPosition = new Vector3(minOffset+childId*offset, childId * cardSize.y, yPos);
+
+        if (StaticSlot)
+        {
+            aimPosition = Vector3.zero;
+        }
 
         if (cardVisual.Focused)
         {
-            aimPosition = Vector3.Lerp(aimPosition, transform.InverseTransformPoint(Camera.main.transform.position), FocusDelta);
+            aimPosition = Vector3.Lerp(aimPosition, transform.InverseTransformPoint(Camera.main.transform.position), FocusDelta)+FocusOffset;
         }
 
 
         return aimPosition;
+    }
+
+    [ContextMenu("Test")]
+    private void TestLayout()
+    {
+        _shoundReposition = true;
+        foreach (CardBehaviour cb in FindObjectsOfType<CardBehaviour>())
+        {
+            AddCardToLayout(cb);
+        }   
     }
 }

@@ -35,4 +35,13 @@ MonoBehaviour:
   - GiveCardToRPC
   - StartTurn
   - PlayerClickedOnDeckRPC
+  - LaunchTimer
+  - DeckClicked
+  - PlayerEndTurnRPC
+  - PlayerMakeChoiceRPC
+  - PlayerPayCostRPC
+  - PlayerPlayedCardRPC
+  - GiveCardToPlayer
+  - GetEventCard
+  - HideEncounterCard
   DisableAutoOpenWizard: 1

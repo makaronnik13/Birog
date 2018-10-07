@@ -117,7 +117,6 @@ namespace Photon.Pun.Demo.PunBasics
             {
                 if (targetPlayer == PhotonNetwork.LocalPlayer)
                 {
-                    Debug.Log((bool)changedProps[DefaultResources.PLAYER_IS_READY]);
                     if ((bool)changedProps[DefaultResources.PLAYER_IS_READY])
                     {
                         ReadyButton.GetComponent<Image>().color = Color.green;
@@ -151,11 +150,26 @@ namespace Photon.Pun.Demo.PunBasics
             {
                 if (CheckAllPlayerLoadedLevel())
                 {
-                    ReadyButton.gameObject.SetActive(false);
-                    Counter.StartCount(3, () => { PhotonNetwork.LoadLevel(BattleLevelName); });
+                    photonView.RPC("LaunchTimer", RpcTarget.All, new object[] { });
                 }
             }
         }
+
+        [PunRPC]
+        private void LaunchTimer()
+        {
+            ReadyButton.gameObject.SetActive(false);
+            if (PhotonNetwork.IsMasterClient)
+            {
+                Counter.StartCount(3, () => { PhotonNetwork.LoadLevel(BattleLevelName); });
+            }
+            else
+            {
+                Counter.StartCount(3);
+            }
+            
+        }
+
 
         private bool CheckAllPlayerLoadedLevel()
         {
@@ -234,36 +248,21 @@ namespace Photon.Pun.Demo.PunBasics
 		/// </remarks>
 		public override void OnJoinedRoom()
 		{
-            Hashtable props = new Hashtable
-            {
-                {DefaultResources.PLAYER_CLASS, SpellGame.Player.Instance.PlayerClass}
-            };
-            PhotonNetwork.LocalPlayer.SetCustomProperties(props);
-
             foreach (Player p in PhotonNetwork.PlayerList)
             {
                 GameObject entry = Instantiate(PlayerListEntryPrefab);
                 entry.transform.SetParent(InsideRoomPanel.transform);
                 entry.transform.localScale = Vector3.one;
                 entry.transform.localPosition = Vector3.zero;
-                entry.GetComponent<PlayerListEntry>().Initialize(p.ActorNumber, p.NickName);
+                entry.GetComponent<PlayerListEntry>().Initialize(p);
             }
 
-            props = new Hashtable
+            Hashtable props = new Hashtable
             {
                 {DefaultResources.PLAYER_IS_READY, false}
             };
             PhotonNetwork.LocalPlayer.SetCustomProperties(props);
 
-
-            // #Critical: We only load if we are the first player, else we rely on  PhotonNetwork.AutomaticallySyncScene to sync our instance scene.
-            if (PhotonNetwork.CurrentRoom.PlayerCount == PhotonNetwork.CurrentRoom.MaxPlayers)
-			{
-                // #Critical
-                // Load the Room Level.
-                ReadyButton.gameObject.SetActive(false);
-                Counter.StartCount(3, ()=> { PhotonNetwork.LoadLevel(BattleLevelName); });
-			}
 
             ReadyButton.gameObject.SetActive(true);
         }
@@ -276,7 +275,7 @@ namespace Photon.Pun.Demo.PunBasics
             entry.transform.SetParent(InsideRoomPanel.transform);
             entry.transform.localScale = Vector3.one;
             entry.transform.localPosition = Vector3.zero;
-            entry.GetComponent<PlayerListEntry>().Initialize(other.ActorNumber, other.NickName);
+            entry.GetComponent<PlayerListEntry>().Initialize(other);
         }
         #endregion
 

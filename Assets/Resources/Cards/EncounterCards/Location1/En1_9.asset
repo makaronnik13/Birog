@@ -8,10 +8,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: be74b70e01605af47b0f5e8491505341, type: 3}
   m_Name: En1_9
-  m_EditorClassIdentifier: Assembly-CSharp::EcnounterCard
-  CardName: 
-  Image: {fileID: 0}
-  Description: 
-  Variants: []
+  m_EditorClassIdentifier: 
+  CardName: test encounter
+  Image: {fileID: 21300016, guid: 22f8191eb4ec4df4db0c22110859a039, type: 3}
+  Description: here is sample text sample text sample text sample text sample text
+    sample text sample text sample text sample text sample text sample text sample
+    text
+  Variants:
+  - Description: 1
+  - Description: 2
+  - Description: 3

@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Card", menuName = "Cards/EncounterCard", order = 1)]
-public class EcnounterCard : ScriptableObject, ICard
+public class EncounterCard : ScriptableObject, ICard
 {
     public string CardName;
     public Sprite Image;

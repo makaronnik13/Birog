@@ -19,6 +19,8 @@ public class ClassChooser : MonoBehaviour {
         {
             __currentClass = value;
 
+            Debug.Log(__currentClass);
+
             if (value >= DefaultResources.AllClasses.Length)
             {
                 __currentClass = value - DefaultResources.AllClasses.Length;
@@ -28,11 +30,18 @@ public class ClassChooser : MonoBehaviour {
                 __currentClass = DefaultResources.AllClasses.Length + value;
             }
 
+
             //update ui
             ClassName.text = DefaultResources.AllClasses[__currentClass].BattlerName;
             ClassHp.text = DefaultResources.AllClasses[__currentClass].Hp+"";
             ClassDescription.text = DefaultResources.AllClasses[__currentClass].Description;
             ClassImage.sprite = DefaultResources.AllClasses[__currentClass].BattlerImage;
+
+            Hashtable props = new Hashtable
+            {
+                {DefaultResources.PLAYER_CLASS, SpellGame.Player.Instance.PlayerClass}
+            };
+            PhotonNetwork.LocalPlayer.SetCustomProperties(props);
         }
     }
 

@@ -11,6 +11,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 942739e7bbb0d0a4e97c5baf394fd5ee, type: 3}
   m_Name: E1
   m_EditorClassIdentifier: 
-  CardName: 
-  Image: {fileID: 0}
-  Description: 
+  CardName: event
+  Image: {fileID: 21300034, guid: 22f8191eb4ec4df4db0c22110859a039, type: 3}
+  Description: this is test event

@@ -9,22 +9,16 @@ public static class DefaultResources
     public static string PLAYER_LOADED_LEVEL = "LevelLoaded";
     public static string PLAYER_CLASS = "PlayerClass";
     public static string PLAYER_IS_READY = "PlayerIsReady";
-    public static string PLAYER_LIVES = "PlayerLives";
-    public static string PLAYER_CHOOSED_CARDS = "PlayerFinishedTurn";
-
-    public static string PLAYER_CHOOSED_CARDS_TO_ATACK = "PlayerChoosedCardsToAtack";
-    public static string PLAYER_HAND = "PlayerHand";
-    public static string PLAYER_DECK = "PlayerDeck";
-
+    public static string IS_ACTIVE_PLAYER = "ActivePlayer";
 
     private static Dictionary<CardStats.CardType, Color> _typesColors = new Dictionary<CardStats.CardType, Color>()
     {
-        {CardStats.CardType.Cloth, new Color(0.3f, 0.8f, 0.3f, 0.5f)},
-        {CardStats.CardType.Gun, new Color(0.7f, 0.3f, 0.3f, 0.5f)},
-        {CardStats.CardType.Minion, new Color(0.6f, 0.6f, 0.4f, 0.5f)},
-        {CardStats.CardType.Skill, new Color(0.3f, 0.3f, 0.7f, 0.5f)},
-        {CardStats.CardType.Spell, new Color(0.6f, 0.2f, 0.6f, 0.5f)},
-        {CardStats.CardType.Tools, new Color(0.4f, 0.4f, 0.4f, 0.5f)},
+        {CardStats.CardType.Cloth, new Color(0.3f, 0.8f, 0.3f, 1f)},
+        {CardStats.CardType.Gun, new Color(0.7f, 0.3f, 0.3f, 1f)},
+        {CardStats.CardType.Minion, new Color(0.6f, 0.6f, 0.4f, 1f)},
+        {CardStats.CardType.Skill, new Color(0.3f, 0.3f, 0.7f, 1f)},
+        {CardStats.CardType.Spell, new Color(0.6f, 0.2f, 0.6f, 1f)},
+        {CardStats.CardType.Tools, new Color(0.4f, 0.4f, 0.4f, 1f)},
 
     };
 
@@ -46,7 +40,7 @@ public static class DefaultResources
         {
             if (_allCards == null)
             {
-                EcnounterCard[] encounterCards  = Resources.LoadAll<EcnounterCard>("Cards");
+                EncounterCard[] encounterCards  = Resources.LoadAll<EncounterCard>("Cards");
                 BattleCard[] battleCards = Resources.LoadAll<BattleCard>("Cards");
                 EventCard[] eventsCards = Resources.LoadAll<EventCard>("Cards");
 
@@ -79,6 +73,10 @@ public static class DefaultResources
 
     public static int GetCardId(ICard card)
     {
+        if (card == null)
+        {
+            return -1;
+        }
         return AllCards.ToList().IndexOf(card);
     }
 
@@ -91,10 +89,13 @@ public static class DefaultResources
     public enum PrefabType
     {
         BattleCard,
+        CardNeed,
         Deck,
+        EncounterCard,
         EventCard,
+        PlayerListEntry,
         ResourceIcon,
-        EncounterCard
+        VariantButton
     }
 
     private static List<GameObject> _prefabs = new List<GameObject>();

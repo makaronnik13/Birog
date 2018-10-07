@@ -11,12 +11,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50d7e7f241d4c32428966d1e4206ca87, type: 3}
   m_Name: B6
   m_EditorClassIdentifier: 
-  CardName: 4net4e
-  Image: {fileID: 21300024, guid: 961dd7189a42b0a4281637922fdc48ce, type: 3}
-  Description: 'a46m46m
-
-    a64mme6m'
-  CardType: 0
+  CardName: "\u0414\u0432\u0430\u0447\u0438\u043D\u043A\u0430"
+  Image: {fileID: 21300000, guid: 4fd62176881cef445a7e795a7eac8713, type: 3}
+  Description: "\u041F\u0440\u0435\u0432\u0440\u0430\u0449\u0430\u0435\u0442 \u043D\u043E\u0441\u0438\u0442\u0435\u043B\u044F
+    \u0432 \u0434\u0432\u043E\u0449\u0435\u0440\u0430"
+  CardType: 4
   Resources:
-  - Resource: 1
-    Value: 3
+  - Resource: 4
+    Value: 1
+  - Resource: 0
+    Value: 1

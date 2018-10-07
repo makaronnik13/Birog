@@ -32,13 +32,14 @@ public class PlayerListEntry : MonoBehaviour
             {
                 if (!_glowMaterial)
                 {
-                    _glowMaterial = GetComponent<Image>().material;
+                    _glowMaterial = new Material(GetComponent<Image>().material);
+                    GetComponent<Image>().material = _glowMaterial;
                 }
                 return _glowMaterial;
             }
         }
 
-        private int ownerId;
+        public int ownerId;
         public int OwnerId
         {
             get
@@ -76,11 +77,11 @@ public class PlayerListEntry : MonoBehaviour
 
         #endregion
 
-        public void Initialize(int playerId, string playerName)
+        public void Initialize(Player player)
         {
-            ownerId = playerId;
-            PlayerNameText.text = playerName;           
-            BattlerClass bClass = DefaultResources.GetClassById((int)PhotonNetwork.LocalPlayer.CustomProperties[DefaultResources.PLAYER_CLASS]);
+            ownerId = player.ActorNumber;
+            PlayerNameText.text = player.NickName;           
+            BattlerClass bClass = DefaultResources.GetClassById((int)player.CustomProperties[DefaultResources.PLAYER_CLASS]);
             PlayerClassImage.sprite = bClass.BattlerImage;
             PlayerClassText.text = bClass.BattlerName;
 

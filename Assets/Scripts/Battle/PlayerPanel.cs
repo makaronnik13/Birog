@@ -25,9 +25,9 @@ public class PlayerPanel : MonoBehaviourPunCallbacks
 
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
     {
-        if (changedProps.ContainsKey(DefaultResources.PLAYER_LIVES) && _owner == targetPlayer)
+        /*if (changedProps.ContainsKey(DefaultResources.PLAYER_LIVES) && _owner == targetPlayer)
         {
             HpCounter.text = "" + targetPlayer.CustomProperties[DefaultResources.PLAYER_LIVES];
-        }   
+        } */  
     }
 }

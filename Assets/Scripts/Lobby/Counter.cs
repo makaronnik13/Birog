@@ -32,7 +32,7 @@ public class Counter : MonoBehaviour
         }
     }
 
-    public void StartCount(int v, Action p)
+    public void StartCount(int v, Action p = null)
     {
         ShowTimer();
         StartCoroutine(Count(v,p));
@@ -57,6 +57,9 @@ public class Counter : MonoBehaviour
             yield return new WaitForSeconds(Time.deltaTime);
         }
         HideTimer();
-        p.Invoke();
+        if (p!=null)
+        {
+            p.Invoke();
+        }       
     }
 }
