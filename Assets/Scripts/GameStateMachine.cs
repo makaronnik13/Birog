@@ -7,15 +7,15 @@ using UnityEngine;
 
 public class GameStateMachine : MonoBehaviourPun
 {
-    public Action<int> OnPlayerTurnStarted = (playerId) => { };
+    public Action<Player> OnPlayerTurnStarted = (playerId) => { };
     public Action OnRoundStarted = ()=> { };
 
-    private Queue<int> _playersQueue = new Queue<int>();
+    private Queue<Player> _playersQueue = new Queue<Player>();
 
-    private int _firstPlayer = -1;
-    private int _currentPlayer = -1;
+    private Player _firstPlayer = null;
+    private Player _currentPlayer = null;
 
-    public int NextPlayer
+    public Player NextPlayer
     {
         get
         {
@@ -25,11 +25,11 @@ public class GameStateMachine : MonoBehaviourPun
         }
     }
 
-    public int CurrentPlayer
+    public Player CurrentPlayer
     {
         get
         {
-            if (_currentPlayer == -1)
+            if (_currentPlayer == null)
             {
                 _currentPlayer = NextPlayer;
             }
@@ -51,9 +51,9 @@ public class GameStateMachine : MonoBehaviourPun
         }
     }
 
-    public void StartGame(List<int> playersQueue)
+    public void StartGame(List<Player> playersQueue)
     {
-        _playersQueue = new Queue<int>(playersQueue);
+        _playersQueue = new Queue<Player>(playersQueue);
         _firstPlayer = playersQueue.ToArray()[0];
         StartRound();
     }
@@ -76,7 +76,7 @@ public class GameStateMachine : MonoBehaviourPun
         StartPlayerTurn(NextPlayer);
     }
 
-    private void StartPlayerTurn(int i)
+    private void StartPlayerTurn(Player i)
     {
         OnPlayerTurnStarted(i);
     }

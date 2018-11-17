@@ -10,7 +10,7 @@ public class CardVisual : MonoBehaviour {
     public Image CardImg;
 
 
-    protected ICard _card;
+    public ICard _card;
 
 	public void Init(ICard card)
     {

@@ -11,6 +11,8 @@ public static class DefaultResources
     public static string PLAYER_IS_READY = "PlayerIsReady";
     public static string IS_ACTIVE_PLAYER = "ActivePlayer";
 
+    public static int CardsOnHand = 6;
+
     private static Dictionary<CardStats.CardType, Color> _typesColors = new Dictionary<CardStats.CardType, Color>()
     {
         {CardStats.CardType.Cloth, new Color(0.3f, 0.8f, 0.3f, 1f)},

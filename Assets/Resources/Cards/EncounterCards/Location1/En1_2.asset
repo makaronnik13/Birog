@@ -3,7 +3,7 @@
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
@@ -12,10 +12,32 @@ MonoBehaviour:
   m_Name: En1_2
   m_EditorClassIdentifier: 
   CardName: test encounter
-  Image: {fileID: 21300002, guid: 22f8191eb4ec4df4db0c22110859a039, type: 3}
   Description: here is sample text sample text sample text sample text sample text
     sample text sample text sample text sample text sample text sample text sample
     text
+  Image: {fileID: 21300002, guid: 22f8191eb4ec4df4db0c22110859a039, type: 3}
   Variants:
-  - Description: 1
-  - Description: 2
+  - Description: 
+    VariantCost:
+      Effect: 0
+      Type: 0
+      Resources: 
+      CardTypes: 
+      Cards: []
+    Effects: []
+  - Description: 
+    VariantCost:
+      Effect: 0
+      Type: 0
+      Resources: 
+      CardTypes: 
+      Cards: []
+    Effects: []
+  - Description: 
+    VariantCost:
+      Effect: 0
+      Type: 0
+      Resources: 
+      CardTypes: 
+      Cards: []
+    Effects: []

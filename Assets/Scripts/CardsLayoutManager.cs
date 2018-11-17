@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class CardsLayoutManager : Singleton<CardsLayoutManager> {
@@ -97,5 +98,10 @@ public class CardsLayoutManager : Singleton<CardsLayoutManager> {
                 Destroy(cv.gameObject);
             });
         });
+    }
+
+    public CardBehaviour GetCardFrom(BattleCard card, SlotType playerDeck, int id = -1)
+    {
+        return GetLayout(playerDeck, id).Cards.FirstOrDefault(c=>(ScriptableObject)c.GetComponent<CardVisual>()._card == card);
     }
 }

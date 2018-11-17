@@ -73,11 +73,22 @@ public class ClientController : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
+    private void TakeCardFromDeck(int playerId, int cardId)
+    {
+        if (playerId == PhotonNetwork.LocalPlayer.ActorNumber) //visualise giving cards only for local player
+        { 
+            TakeCard((BattleCard)DefaultResources.GetCardById(cardId));
+        }
+    }
+
+
+    [PunRPC]
     private void GiveCardToPlayer(int playerId, int cardId)
     {
         if (playerId == PhotonNetwork.LocalPlayer.ActorNumber) //visualise giving cards only for local player
         {
-            TakeCard((BattleCard)DefaultResources.GetCardById(cardId));
+            AddCardToDeck((BattleCard)DefaultResources.GetCardById(cardId));
+            //TakeCard((BattleCard)DefaultResources.GetCardById(cardId));
         }
     }
 
@@ -106,7 +117,13 @@ public class ClientController : MonoBehaviourPunCallbacks
 
     private void TakeCard(BattleCard card)
     {
-        CardBehaviour cardBehaviour = CardsLayoutManager.Instance.CreateCardIn(card, CardsLayoutManager.SlotType.Nowhere);
+        CardBehaviour cardBehaviour = CardsLayoutManager.Instance.GetCardFrom(card, CardsLayoutManager.SlotType.PlayerDeck);
         CardsLayoutManager.Instance.MoveCardTo(cardBehaviour, CardsLayoutManager.SlotType.PlayerHand);
+    }
+
+    private void AddCardToDeck(BattleCard card)
+    {
+        CardBehaviour cardBehaviour = CardsLayoutManager.Instance.CreateCardIn(card, CardsLayoutManager.SlotType.Nowhere);
+        CardsLayoutManager.Instance.MoveCardTo(cardBehaviour, CardsLayoutManager.SlotType.PlayerDeck);
     }
 }

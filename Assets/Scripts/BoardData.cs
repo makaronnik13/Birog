@@ -26,7 +26,7 @@ public class BoardData : MonoBehaviour
 
     private List<Queue<EncounterCard>> _encounterDecks = new List<Queue<EncounterCard>>();
 
-    private Dictionary<int, List<BattleCard>> _playersCards = new Dictionary<int, List<BattleCard>>();
+    private Dictionary<Player, PlayerCards> _playersCards = new Dictionary<Player, PlayerCards>();
 
     private Queue<EventCard> _eventCards = new Queue<EventCard>();
 
@@ -63,9 +63,25 @@ public class BoardData : MonoBehaviour
         return card;
     }
 
-    public void InitBoardData(EncounterDeck[] encounterDecks, EventsDeck eventsDeck, Dictionary<int, List<BattleCard>> playersDeck)
+    public List<BattleCard> TakeCards(Player player, int count)
     {
-        _playersCards = playersDeck;
+        List<BattleCard> takedCards = new List<BattleCard>();
+        for (int i = 0; i<count; i++)
+        {
+            takedCards.Add(_playersCards[player].Deck.Dequeue());
+        }
+        _playersCards[player].Hand.AddRange(takedCards);
+        return takedCards;
+    }
+
+    public void InitBoardData(EncounterDeck[] encounterDecks, EventsDeck eventsDeck, Dictionary<Player, List<BattleCard>> playersDeck)
+    {
+        foreach (KeyValuePair<Player, List<BattleCard>> pair in playersDeck)
+        {
+            PlayerCards cards = new PlayerCards();
+            cards.Deck = new Queue<BattleCard>(pair.Value);
+            _playersCards.Add(pair.Key, cards);
+        }
         _eventCards = new Queue<EventCard>(eventsDeck.Cards);
         _encounterDecks = new List<Queue<EncounterCard>>();
         foreach (EncounterDeck deck in encounterDecks)

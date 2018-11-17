@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UniRx;
 using UnityEngine;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
@@ -36,13 +37,18 @@ public class ServerController : MonoBehaviourPunCallbacks
         ClientController.Instance.photonView.RPC("GetEventCard", RpcTarget.All, new object[] { DefaultResources.GetCardId(card)});
     }
 
-    private void StartPlayerTurn(int playerId)
+    private void StartPlayerTurn(Player player)
     {
         foreach (Player p in PhotonNetwork.PlayerList)
         {
-            Hashtable props = new Hashtable() { { DefaultResources.IS_ACTIVE_PLAYER, p.ActorNumber == playerId } };
+            Hashtable props = new Hashtable() { { DefaultResources.IS_ACTIVE_PLAYER, p == player } };
             p.SetCustomProperties(props);
         }
+
+        foreach (BattleCard bc in BoardData.Instance.TakeCards(player, DefaultResources.CardsOnHand))
+        {
+            TakeCardFromDeck(player, DefaultResources.GetCardId(bc));
+        }     
     }
 
     [PunRPC]
@@ -101,18 +107,18 @@ public class ServerController : MonoBehaviourPunCallbacks
 
     private void StartGame()
     {
-        Dictionary<int, List<BattleCard>> playerCards = new Dictionary<int, List<BattleCard>>();
+        Dictionary<Player, List<BattleCard>> playerCards = new Dictionary<Player, List<BattleCard>>();
         foreach (Player player in PhotonNetwork.PlayerList)
         {
             foreach (BattleCard bc in DefaultResources.GetClassById((int)player.CustomProperties[DefaultResources.PLAYER_CLASS]).Deck)
             {
                 GiveCardToPlayer(player, DefaultResources.GetCardId(bc));
             }
-            List<BattleCard> cards = DefaultResources.GetClassById((int)player.CustomProperties[DefaultResources.PLAYER_CLASS]).Deck.ToList();  //get fake card-list from player's class
-            playerCards.Add(player.ActorNumber, cards);
+            List<BattleCard> cards = DefaultResources.GetClassById((int)player.CustomProperties[DefaultResources.PLAYER_CLASS]).Deck.OrderBy(c=>Guid.NewGuid()).ToList();  //get fake card-list from player's class
+            playerCards.Add(player, cards);
         }
 
-        List<int> playersQueque = PhotonNetwork.PlayerList.Select(p => p.ActorNumber).OrderBy(g => Guid.NewGuid()).ToList();
+        List<Player> playersQueque = PhotonNetwork.PlayerList.OrderBy(g => Guid.NewGuid()).ToList();
 
         BoardData.Instance.InitBoardData(FakeQuest.EncounterDecks, FakeQuest.EventsDeck, playerCards);
 
@@ -135,5 +141,10 @@ public class ServerController : MonoBehaviourPunCallbacks
     private void GiveCardToPlayer(Player player, int cardId)
     {
         ClientController.Instance.photonView.RPC("GiveCardToPlayer", RpcTarget.All, new object[] { player.ActorNumber, cardId});
+    }
+
+    private void TakeCardFromDeck(Player player, int cardId)
+    {
+        ClientController.Instance.photonView.RPC("TakeCardFromDeck", RpcTarget.All, new object[] { player.ActorNumber, cardId });
     }
 }

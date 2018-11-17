@@ -44,4 +44,6 @@ MonoBehaviour:
   - GiveCardToPlayer
   - GetEventCard
   - HideEncounterCard
+  - TakeCardFromDeckint
+  - TakeCardFromDeck
   DisableAutoOpenWizard: 1
