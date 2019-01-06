@@ -9,6 +9,6 @@ public class Quest : ScriptableObject
     public string QuestName;
     public string QuestDescription;
     public Sprite QuestImage;
-    public EncounterDeck[] EncounterDecks;
+    public EncounterDeck EncounterDeck;
     public EventsDeck EventsDeck;
 }

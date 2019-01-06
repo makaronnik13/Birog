@@ -22,9 +22,9 @@ public class EncounterCardVisual : CardVisual
 
     private Action _hideCallback;
 
-    public void Init(EncounterCard card, bool show)
+    public void Init(EncounterCardWrapper card, bool show)
     {
-        base.Init(card);
+        base.Init(card.Card, card.Guid);
     }
 
     public void ShowVariants()

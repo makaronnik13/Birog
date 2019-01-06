@@ -8,6 +8,7 @@ public class CardCollider : MonoBehaviour
     public Action OnClicked = ()=> { };
     public Action<bool> OnFocusChanged = (b)=> { };
 
+
     void OnMouseDown()
     {
         OnClicked();     
@@ -15,7 +16,8 @@ public class CardCollider : MonoBehaviour
 
     private void OnMouseDrag()
     {
-       // Debug.Log("Drag");
+
+        // Debug.Log("Drag");
     }
 
     private void OnMouseEnter()
@@ -25,11 +27,15 @@ public class CardCollider : MonoBehaviour
 
     private void OnMouseExit()
     {
+
         OnFocusChanged(false);
     }
 
     private void OnMouseUp()
     {
+ 
         //Debug.Log("Up");
     }
+
+
 }

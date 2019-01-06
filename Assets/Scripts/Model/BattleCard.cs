@@ -6,6 +6,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Card", menuName = "Cards/BattleCard", order = 1)]
 public class BattleCard : ScriptableObject, ICard
 {
+    public int Id;
+
     [SerializeField]
     public string CardName;
     [SerializeField]
@@ -46,11 +48,9 @@ public class CardStats
 
     public enum CardType
     {
-       Spell,
-       Gun,
-       Cloth,
-       Minion,
-       Skill,
-       Tools
+       Weapon,
+       Mutation,
+       Fint,
+       Minion
     }
 }

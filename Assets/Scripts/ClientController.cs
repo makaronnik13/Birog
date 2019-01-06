@@ -26,7 +26,7 @@ public class ClientController : MonoBehaviourPunCallbacks
     {
         if ((bool)PhotonNetwork.LocalPlayer.CustomProperties[DefaultResources.IS_ACTIVE_PLAYER])
         {
-            ServerController.Instance.photonView.RPC("PlayerClickedOnDeckRPC", RpcTarget.MasterClient, new object[] { PhotonNetwork.LocalPlayer.ActorNumber, deck.GetComponent<PhotonView>().ViewID });
+            ServerController.Instance.photonView.RPC("PlayerClickedOnDeckRPC", RpcTarget.MasterClient, new object[] { PhotonNetwork.LocalPlayer.ActorNumber});
         }
     }
 
@@ -48,54 +48,56 @@ public class ClientController : MonoBehaviourPunCallbacks
         ServerController.Instance.photonView.RPC("PlayerPayCostRPC", RpcTarget.MasterClient, new object[] { PhotonNetwork.LocalPlayer.ActorNumber, variantId });
     }
 
-    public void EndTurn()
-    {
-        ServerController.Instance.photonView.RPC("PlayerEndTurnRPC", RpcTarget.MasterClient, new object[] { });
-    }
 
 
     //recieve
 
     [PunRPC]
-    private void DeckClicked(int cardId, int deckId)
+    private void DeckClicked(int cardId, string cardGuid)
     {
-        CardBehaviour cardBehaviour = CardsLayoutManager.Instance.CreateCardIn((EncounterCard)DefaultResources.GetCardById(cardId), CardsLayoutManager.SlotType.EncounterDeck, deckId);
-        CardsLayoutManager.Instance.MoveCardTo(cardBehaviour, CardsLayoutManager.SlotType.CurrentEncounter, -1, ()=> {
+        EncounterCardWrapper wrapper = new EncounterCardWrapper((EncounterCard)DefaultResources.GetCardById(cardId, DefaultResources.CardType.Encounter), cardGuid);
+
+        CardBehaviour cardBehaviour = CardsLayoutManager.Instance.CreateCardIn(wrapper, CardsLayoutManager.SlotType.EncounterDeck);
+        CardsLayoutManager.Instance.MoveCardTo(cardBehaviour, CardsLayoutManager.SlotType.CurrentEncounter, ()=> 
+        {
             cardBehaviour.GetComponent<EncounterCardVisual>().ShowVariants();
         });
     }
 
     [PunRPC]
-    private void GetEventCard(int cardId)
+    private void GetEventCard(int cardId, string guid)
     {
-        CardBehaviour cardBehaviour = CardsLayoutManager.Instance.CreateCardIn((EventCard)DefaultResources.GetCardById(cardId), CardsLayoutManager.SlotType.EventDeck);
+        EventCardWrapper wrapper = new EventCardWrapper((EventCard)DefaultResources.GetCardById(cardId, DefaultResources.CardType.Event), guid); 
+        CardBehaviour cardBehaviour = CardsLayoutManager.Instance.CreateCardIn(wrapper, CardsLayoutManager.SlotType.EventDeck);
         CardsLayoutManager.Instance.MoveCardTo(cardBehaviour, CardsLayoutManager.SlotType.EventDrop);
     }
 
     [PunRPC]
-    private void TakeCardFromDeck(int playerId, int cardId)
+    private void TakeCardFromDeck(int playerId, int cardId, string cardGuid)
     {
+        Debug.Log("TC1");
+
         if (playerId == PhotonNetwork.LocalPlayer.ActorNumber) //visualise giving cards only for local player
         { 
-            TakeCard((BattleCard)DefaultResources.GetCardById(cardId));
+            TakeCard((BattleCard)DefaultResources.GetCardById(cardId, DefaultResources.CardType.Battle), cardGuid);
         }
     }
 
 
     [PunRPC]
-    private void GiveCardToPlayer(int playerId, int cardId)
+    private void GiveCardToPlayer(int playerId, int cardId, string cardGuid)
     {
         if (playerId == PhotonNetwork.LocalPlayer.ActorNumber) //visualise giving cards only for local player
         {
-            AddCardToDeck((BattleCard)DefaultResources.GetCardById(cardId));
+            AddCardToDeck((BattleCard)DefaultResources.GetCardById(cardId, DefaultResources.CardType.Battle), cardGuid);
             //TakeCard((BattleCard)DefaultResources.GetCardById(cardId));
         }
     }
 
     [PunRPC]
-    private void HideEncounterCard(int deckId)
+    private void HideEncounterCard()
     {
-        CardsLayoutManager.Instance.HideEncounterCard(deckId);
+        CardsLayoutManager.Instance.HideEncounterCard();
     }
 
     private void Start()
@@ -115,15 +117,18 @@ public class ClientController : MonoBehaviourPunCallbacks
         }
     }
 
-    private void TakeCard(BattleCard card)
+    private void TakeCard(BattleCard card, string guid)
     {
-        CardBehaviour cardBehaviour = CardsLayoutManager.Instance.GetCardFrom(card, CardsLayoutManager.SlotType.PlayerDeck);
+        Debug.Log("TC2");
+        CardBehaviour cardBehaviour = AddCardToDeck(card, guid);
         CardsLayoutManager.Instance.MoveCardTo(cardBehaviour, CardsLayoutManager.SlotType.PlayerHand);
     }
 
-    private void AddCardToDeck(BattleCard card)
+    private CardBehaviour AddCardToDeck(BattleCard card, string guid)
     {
-        CardBehaviour cardBehaviour = CardsLayoutManager.Instance.CreateCardIn(card, CardsLayoutManager.SlotType.Nowhere);
-        CardsLayoutManager.Instance.MoveCardTo(cardBehaviour, CardsLayoutManager.SlotType.PlayerDeck);
+        BattleCardWrapper wrapper = new BattleCardWrapper(card, guid);
+        CardBehaviour cardBehaviour = CardsLayoutManager.Instance.CreateCardIn(wrapper, CardsLayoutManager.SlotType.Nowhere);
+        CardsLayoutManager.Instance.MoveCardTo(cardBehaviour, CardsLayoutManager.SlotType.PlayerDeck, null, true);
+        return cardBehaviour;
     }
 }

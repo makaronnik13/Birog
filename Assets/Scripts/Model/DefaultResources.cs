@@ -10,18 +10,25 @@ public static class DefaultResources
     public static string PLAYER_CLASS = "PlayerClass";
     public static string PLAYER_IS_READY = "PlayerIsReady";
     public static string IS_ACTIVE_PLAYER = "ActivePlayer";
+    public static string PLAYER_HP = "PlayerHp";
+    public static string PLAYER_ARMOR = "PlayerArmor";
+    public static string PLAYER_INITIATIVE = "PlayerInitiative";
 
-    public static int CardsOnHand = 6;
+    public static int CardsOnHand = 5;
+
+    public enum CardType
+    {
+        Battle,
+        Encounter,
+        Event
+    }
 
     private static Dictionary<CardStats.CardType, Color> _typesColors = new Dictionary<CardStats.CardType, Color>()
     {
-        {CardStats.CardType.Cloth, new Color(0.3f, 0.8f, 0.3f, 1f)},
-        {CardStats.CardType.Gun, new Color(0.7f, 0.3f, 0.3f, 1f)},
-        {CardStats.CardType.Minion, new Color(0.6f, 0.6f, 0.4f, 1f)},
-        {CardStats.CardType.Skill, new Color(0.3f, 0.3f, 0.7f, 1f)},
-        {CardStats.CardType.Spell, new Color(0.6f, 0.2f, 0.6f, 1f)},
-        {CardStats.CardType.Tools, new Color(0.4f, 0.4f, 0.4f, 1f)},
-
+        {CardStats.CardType.Minion, new Color(0.3f, 0.7f, 0.3f, 1f)},
+        {CardStats.CardType.Mutation, new Color(0.5f, 0.2f, 0.5f, 1f)},
+        {CardStats.CardType.Weapon, new Color(0.7f, 0.3f, 0.3f, 1f)},
+        {CardStats.CardType.Fint, new Color(0.3f, 0.3f, 0.7f, 1f)}
     };
 
     public static Color GetCardColor(CardStats.CardType cardType)
@@ -34,27 +41,71 @@ public static class DefaultResources
     //events codes
     public static byte START_GAME_EVENT = 0;
 
+    private static EncounterCard[] _encounterCards = null;
 
-    private static object[] _allCards = null;
-    public static object[] AllCards
+    public static int CardsForInitiative(int initiative)
+    {
+        int cards = 1;
+
+
+        if (UnityEngine.Random.value<initiative/25f)
+        {
+            cards++;
+        }
+
+        if (UnityEngine.Random.value < Mathf.Clamp(initiative-10,0,initiative) / 25f)
+        {
+            cards++;
+        }
+
+        if (UnityEngine.Random.value < Mathf.Clamp(initiative - 20, 0, initiative) / 15f)
+        {
+            cards++;
+        }
+
+        Debug.Log(cards);
+
+        return cards;
+    }
+
+    public static EncounterCard[] EncounterCards
     {
         get
         {
-            if (_allCards == null)
+            if (_encounterCards == null)
             {
-                EncounterCard[] encounterCards  = Resources.LoadAll<EncounterCard>("Cards");
-                BattleCard[] battleCards = Resources.LoadAll<BattleCard>("Cards");
-                EventCard[] eventsCards = Resources.LoadAll<EventCard>("Cards");
-
-                List<object> cards = new List<object>();
-                cards.AddRange(encounterCards);
-                cards.AddRange(battleCards);
-                cards.AddRange(eventsCards);
-                _allCards = cards.ToArray();
+                _encounterCards = Resources.LoadAll<EncounterCard>("Cards");
             }
-            return _allCards;
+            return _encounterCards;
         }
     }
+
+    private static BattleCard[] _battleCards = null;
+    public static BattleCard[] BattleCards
+    {
+        get
+        {
+            if (_battleCards == null)
+            {
+                _battleCards = Resources.LoadAll<BattleCard>("Cards");
+            }
+            return _battleCards;
+        }
+    }
+
+    private static EventCard[] _eventCards = null;
+    public static EventCard[] EventCards
+    {
+        get
+        {
+            if (_eventCards == null)
+            {
+                _eventCards = Resources.LoadAll<EventCard>("Cards");
+            }
+            return _eventCards;
+        }
+    }
+   
 
     private static BattlerClass[] _allClasses = null;
     public static BattlerClass[] AllClasses
@@ -73,18 +124,20 @@ public static class DefaultResources
         return AllClasses[id];
     }
 
-    public static int GetCardId(ICard card)
-    {
-        if (card == null)
-        {
-            return -1;
-        }
-        return AllCards.ToList().IndexOf(card);
-    }
 
-    public static ICard GetCardById(int i)
+    public static ICard GetCardById(int i, CardType cardType)
     {
-        return ((ICard)AllCards[i]);
+        switch (cardType)
+        {
+            case CardType.Battle:
+                return BattleCards.FirstOrDefault(c => c.Id == i);
+            case CardType.Encounter:
+                return EncounterCards.FirstOrDefault(c => c.Id == i);
+            case CardType.Event:
+                return EventCards.FirstOrDefault(c => c.Id == i);
+        }
+
+        return null;
     }
 
 
@@ -134,4 +187,23 @@ public static class DefaultResources
     {
         return resourcesSprites[(int)res];
     }
+
+    private static Sprite[] _cardsSprites = null;
+    private static Sprite[] cardsSprites
+    {
+        get
+        {
+            if (_cardsSprites == null)
+            {
+                _cardsSprites = Resources.LoadAll<Sprite>("Sprites/CardsIcons");
+            }
+            return _cardsSprites;
+        }
+    }
+
+    public static Sprite GetNeedCardSprite(CardStats.CardType cardType)
+    {
+        return cardsSprites[(int)cardType];
+    }
+
 }

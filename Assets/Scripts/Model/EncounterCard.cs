@@ -8,6 +8,8 @@ using Sirenix.OdinInspector;
 [CreateAssetMenu(fileName = "Card", menuName = "Cards/EncounterCard", order = 1)]
 public class EncounterCard : ScriptableObject, ICard
 {
+    public int Id;
+
     [HideLabel]
     public string CardName;
     [HideLabel]

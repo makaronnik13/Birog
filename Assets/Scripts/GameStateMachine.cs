@@ -9,6 +9,7 @@ public class GameStateMachine : MonoBehaviourPun
 {
     public Action<Player> OnPlayerTurnStarted = (playerId) => { };
     public Action OnRoundStarted = ()=> { };
+    public bool CanClickEncounterDeck = false;
 
     private Queue<Player> _playersQueue = new Queue<Player>();
 
@@ -79,5 +80,6 @@ public class GameStateMachine : MonoBehaviourPun
     private void StartPlayerTurn(Player i)
     {
         OnPlayerTurnStarted(i);
+        CanClickEncounterDeck = true;
     }
 }

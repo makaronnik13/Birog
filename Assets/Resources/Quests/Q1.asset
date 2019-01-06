@@ -3,7 +3,7 @@
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
@@ -14,8 +14,5 @@ MonoBehaviour:
   QuestName: Test Quest
   QuestDescription: bla-bla-bla
   QuestImage: {fileID: 21300016, guid: 22f8191eb4ec4df4db0c22110859a039, type: 3}
-  EncounterDecks:
-  - {fileID: 11400000, guid: 64ba6ebfb2bafed42827e95732156878, type: 2}
-  - {fileID: 11400000, guid: dc0a41798b8794543a77f8527216d47d, type: 2}
-  - {fileID: 11400000, guid: 4441de0abc222df4fa1d7dcda19c6d9a, type: 2}
+  EncounterDeck: {fileID: 11400000, guid: 64ba6ebfb2bafed42827e95732156878, type: 2}
   EventsDeck: {fileID: 11400000, guid: 0f34c2800d713234b885c857dfc18c19, type: 2}

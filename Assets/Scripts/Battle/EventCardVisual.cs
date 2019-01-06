@@ -4,8 +4,8 @@ using UnityEngine.EventSystems;
 
 public class EventCardVisual : CardVisual
 {
-    public void Init(EventCard card, bool show)
+    public void Init(EventCardWrapper card, bool show)
     {
-        base.Init(card);    
+        base.Init(card.Card, card.Guid);    
     }
 }

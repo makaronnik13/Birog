@@ -16,6 +16,7 @@ public class LobbyPlayerDeck : MonoBehaviour {
 
     private void DeckClicked()
     {
+        /*
         foreach (BattleCard bc in DefaultResources.GetClassById(Player.Instance.PlayerClass).Deck)
         {
             GameObject card = Instantiate(DefaultResources.GetPrefab(DefaultResources.PrefabType.BattleCard));
@@ -29,6 +30,7 @@ public class LobbyPlayerDeck : MonoBehaviour {
             card.GetComponent<BattleCardVisual>().Init(bc, true);
             PreviewLayout.AddCardToLayout(card.GetComponent<CardBehaviour>());
         }
+        */
     }
 
     

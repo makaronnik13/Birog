@@ -5,7 +5,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UniRx;
 using UnityEngine;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
@@ -33,33 +32,36 @@ public class ServerController : MonoBehaviourPunCallbacks
 
     private void RoundStarted()
     {
-        EventCard card = BoardData.Instance.GetNextEventCard();
-        ClientController.Instance.photonView.RPC("GetEventCard", RpcTarget.All, new object[] { DefaultResources.GetCardId(card)});
+        EventCardWrapper card = BoardData.Instance.GetNextEventCard();
+        ClientController.Instance.photonView.RPC("GetEventCard", RpcTarget.All, new object[] { card.CardId, card.Guid});
     }
 
     private void StartPlayerTurn(Player player)
     {
+        Debug.Log("Start turn");
+
         foreach (Player p in PhotonNetwork.PlayerList)
         {
             Hashtable props = new Hashtable() { { DefaultResources.IS_ACTIVE_PLAYER, p == player } };
             p.SetCustomProperties(props);
         }
 
-        foreach (BattleCard bc in BoardData.Instance.TakeCards(player, DefaultResources.CardsOnHand))
+        foreach (BattleCardWrapper bc in BoardData.Instance.TakeCards(player, DefaultResources.CardsForInitiative(BoardData.Instance.GetPlayer(player).Initiative)))
         {
-            TakeCardFromDeck(player, DefaultResources.GetCardId(bc));
+            TakeCardFromDeck(player, bc);
         }     
     }
 
     [PunRPC]
-    private void PlayerClickedOnDeckRPC(int playerId, int viewId)
+    private void PlayerClickedOnDeckRPC(int playerId)
     {
-        EncounterDeckCollider deck = PhotonNetwork.GetPhotonView(viewId).GetComponent<EncounterDeckCollider>();
-        int deckId = FindObjectsOfType<EncounterDeckCollider>().ToList().IndexOf(deck);
-        BoardData.Instance.LastEncounterDeckId = deckId+15;
-        EncounterCard card = BoardData.Instance.GetNextEncounterCard(deckId);
-        BoardData.Instance.CurrentEncounter = DefaultResources.GetCardId(card);
-        ClientController.Instance.photonView.RPC("DeckClicked", RpcTarget.All, new object[] {DefaultResources.GetCardId(card), viewId});   
+        if (GameStateMachine.Instance.CanClickEncounterDeck)
+        {
+            EncounterCardWrapper card = BoardData.Instance.GetNextEncounterCard();
+            BoardData.Instance.CurrentEncounter = card.CardId;
+            ClientController.Instance.photonView.RPC("DeckClicked", RpcTarget.All, new object[] { card.CardId, card.Guid });
+            GameStateMachine.Instance.CanClickEncounterDeck = false;
+        }
     }
 
     [PunRPC]
@@ -72,8 +74,8 @@ public class ServerController : MonoBehaviourPunCallbacks
     private void PlayerMakeChoiceRPC(int variantId)
     {
         Debug.Log("Choose variant "+variantId+" from card: "+ BoardData.Instance.CurrentEncounter);
-
-        ClientController.Instance.photonView.RPC("HideEncounterCard", RpcTarget.All, new object[] { BoardData.Instance.LastEncounterDeckId});
+        ClientController.Instance.photonView.RPC("HideEncounterCard", RpcTarget.All, new object[] {});
+        GameStateMachine.Instance.EndPlayerTurn();
     }
 
     [PunRPC]
@@ -82,11 +84,6 @@ public class ServerController : MonoBehaviourPunCallbacks
 
     }
 
-    [PunRPC]
-    private void PlayerEndTurnRPC()
-    {
-
-    }
 
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
     {
@@ -107,20 +104,21 @@ public class ServerController : MonoBehaviourPunCallbacks
 
     private void StartGame()
     {
-        Dictionary<Player, List<BattleCard>> playerCards = new Dictionary<Player, List<BattleCard>>();
+        Debug.Log("Start game");
         foreach (Player player in PhotonNetwork.PlayerList)
         {
-            foreach (BattleCard bc in DefaultResources.GetClassById((int)player.CustomProperties[DefaultResources.PLAYER_CLASS]).Deck)
+            BattlerClass battlerClass = DefaultResources.GetClassById((int)player.CustomProperties[DefaultResources.PLAYER_CLASS]);
+            BoardData.Instance.AddPlayer(player, battlerClass.Deck.ToList(), battlerClass.Hp, battlerClass.Armor, battlerClass.Initiative);
+
+            foreach (BattleCardWrapper bc in BoardData.Instance.TakeCards(player, DefaultResources.CardsOnHand))
             {
-                GiveCardToPlayer(player, DefaultResources.GetCardId(bc));
+                 TakeCardFromDeck(player, bc);
             }
-            List<BattleCard> cards = DefaultResources.GetClassById((int)player.CustomProperties[DefaultResources.PLAYER_CLASS]).Deck.OrderBy(c=>Guid.NewGuid()).ToList();  //get fake card-list from player's class
-            playerCards.Add(player, cards);
         }
 
         List<Player> playersQueque = PhotonNetwork.PlayerList.OrderBy(g => Guid.NewGuid()).ToList();
 
-        BoardData.Instance.InitBoardData(FakeQuest.EncounterDecks, FakeQuest.EventsDeck, playerCards);
+        BoardData.Instance.InitBoardData(FakeQuest.EncounterDeck.cards, FakeQuest.EventsDeck.Cards);
 
         GameStateMachine.Instance.StartGame(playersQueque);
     }
@@ -138,13 +136,9 @@ public class ServerController : MonoBehaviourPunCallbacks
         return true;
     }
 
-    private void GiveCardToPlayer(Player player, int cardId)
+    private void TakeCardFromDeck(Player player, BattleCardWrapper cardWrapper)
     {
-        ClientController.Instance.photonView.RPC("GiveCardToPlayer", RpcTarget.All, new object[] { player.ActorNumber, cardId});
-    }
-
-    private void TakeCardFromDeck(Player player, int cardId)
-    {
-        ClientController.Instance.photonView.RPC("TakeCardFromDeck", RpcTarget.All, new object[] { player.ActorNumber, cardId });
+        Debug.Log("Take from deck");
+        ClientController.Instance.photonView.RPC("TakeCardFromDeck", RpcTarget.All, new object[] { player.ActorNumber, cardWrapper.CardId, cardWrapper.Guid});
     }
 }

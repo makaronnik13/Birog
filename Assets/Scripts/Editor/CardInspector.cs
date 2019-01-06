@@ -33,8 +33,11 @@ public class CardInspector : Editor
 
     public override void OnInspectorGUI()
     {
-     
+
+        EditorGUILayout.BeginHorizontal();
+        _card.Id = EditorGUILayout.IntField(_card.Id, GUILayout.Width(100f));
         _card.CardName = EditorGUILayout.TextField(_card.CardName);
+        EditorGUILayout.EndHorizontal();
         _card.Image = (Sprite)EditorGUILayout.ObjectField(_card.Image, typeof(Sprite), false, GUILayout.Width(150), GUILayout.Height(150));
         _card.CardType = (CardStats.CardType)EditorGUILayout.EnumPopup("CardType", _card.CardType); 
         _card.Description = EditorGUILayout.TextArea(_card.Description, GUILayout.Height(50));

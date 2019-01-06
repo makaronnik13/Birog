@@ -20,35 +20,38 @@ public class BoardData : MonoBehaviour
         }
     }
 
-    public int LastEncounterDeckId;
-
     public int CurrentEncounter;
 
-    private List<Queue<EncounterCard>> _encounterDecks = new List<Queue<EncounterCard>>();
+    private Queue<EncounterCardWrapper> _encounterDeck = new Queue<EncounterCardWrapper>();
 
-    private Dictionary<Player, PlayerCards> _playersCards = new Dictionary<Player, PlayerCards>();
+    private List<PlayerData> _playersData = new List<PlayerData>();
 
-    private Queue<EventCard> _eventCards = new Queue<EventCard>();
-
-    public EncounterCard GetNextEncounterCard(int deckId)
+    public PlayerData GetPlayer(Player player)
     {
-        EncounterCard card = null;
+        return _playersData.FirstOrDefault(p=>p.player == player);
+    }
 
-        if (_encounterDecks[deckId].Count > 0)
+    private Queue<EventCardWrapper> _eventCards = new Queue<EventCardWrapper>();
+
+    public EncounterCardWrapper GetNextEncounterCard()
+    {
+        EncounterCardWrapper card = null;
+
+        if (_encounterDeck.Count > 0)
         {
-            card = _encounterDecks[deckId].Dequeue();
+            card = _encounterDeck.Dequeue();
         }
 
-        if (_encounterDecks[deckId].Count == 0)
+        if (_encounterDeck.Count == 0)
         {
-            Debug.LogWarning("NO cards in deck "+deckId);
+            Debug.LogWarning("NO cards in deck");
         }
         return card;
     }
 
-    public EventCard GetNextEventCard()
+    public EventCardWrapper GetNextEventCard()
     {
-        EventCard card = null;
+        EventCardWrapper card = null;
 
         if (_eventCards.Count > 0)
         {
@@ -63,31 +66,47 @@ public class BoardData : MonoBehaviour
         return card;
     }
 
-    public List<BattleCard> TakeCards(Player player, int count)
+    public List<BattleCardWrapper> TakeCards(Player player, int count)
     {
-        List<BattleCard> takedCards = new List<BattleCard>();
+        List<BattleCardWrapper> takedCards = new List<BattleCardWrapper>();
         for (int i = 0; i<count; i++)
         {
-            takedCards.Add(_playersCards[player].Deck.Dequeue());
+            if (_playersData.FirstOrDefault(p => p.player == player).Deck.Count == 0)
+            {
+                _playersData.FirstOrDefault(p => p.player == player).UpdateDeck();
+            }
+
+            if (_playersData.FirstOrDefault(p => p.player == player).Deck.Count>0)
+            {
+                takedCards.Add(_playersData.FirstOrDefault(p => p.player == player).Deck.Dequeue());
+            }
         }
-        _playersCards[player].Hand.AddRange(takedCards);
+        _playersData.FirstOrDefault(p => p.player == player).Hand.AddRange(takedCards);
+
         return takedCards;
     }
 
-    public void InitBoardData(EncounterDeck[] encounterDecks, EventsDeck eventsDeck, Dictionary<Player, List<BattleCard>> playersDeck)
+    public void InitBoardData(EncounterCard[] encounterDeck, EventCard[] eventsDeck)
     {
-        foreach (KeyValuePair<Player, List<BattleCard>> pair in playersDeck)
+        List<EventCardWrapper> eventCards = new List<EventCardWrapper>();
+        List<EncounterCardWrapper> encounterCards = new List<EncounterCardWrapper>();
+       
+        foreach (EncounterCard card in encounterDeck)
         {
-            PlayerCards cards = new PlayerCards();
-            cards.Deck = new Queue<BattleCard>(pair.Value);
-            _playersCards.Add(pair.Key, cards);
+            encounterCards.Add(new EncounterCardWrapper(card));
         }
-        _eventCards = new Queue<EventCard>(eventsDeck.Cards);
-        _encounterDecks = new List<Queue<EncounterCard>>();
-        foreach (EncounterDeck deck in encounterDecks)
+
+        foreach (EventCard card in eventsDeck)
         {
-            Queue<EncounterCard> encounterCards = new Queue<EncounterCard>(deck.cards.OrderBy(c=>Guid.NewGuid()));
-            _encounterDecks.Add(encounterCards);
+            eventCards.Add(new EventCardWrapper(card));
         }
+
+        _eventCards = new Queue<EventCardWrapper>(eventCards);
+        _encounterDeck = new Queue<EncounterCardWrapper>(encounterCards);
+    }
+
+    public void AddPlayer(Player player, List<BattleCard> cards, int hp, int armor, int initiative)
+    {
+        _playersData.Add(new PlayerData(player, cards, hp, armor, initiative));
     }
 }

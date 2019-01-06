@@ -3,7 +3,7 @@
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
@@ -11,13 +11,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50d7e7f241d4c32428966d1e4206ca87, type: 3}
   m_Name: B1
   m_EditorClassIdentifier: 
-  CardName: "\u0422\u0432\u043E\u044F \u0431\u044B\u0432\u0448\u0430\u044F"
-  Image: {fileID: 21300000, guid: 56831ceb38a352340b99c70e69110681, type: 3}
-  Description: "\u041E\u0447\u0435\u043D\u044C \u0441\u0442\u0440\u0451\u043C\u043D\u0430\u044F
-    \u0447\u0443\u0432\u0438\u0445\u0430"
+  Id: 1
+  CardName: "\u0429\u0443\u043F\u0430\u043B\u044C\u0446\u0435"
+  Image: {fileID: 21300012, guid: 961dd7189a42b0a4281637922fdc48ce, type: 3}
+  Description: "3 \u0443\u0440\u043E\u043D\u0430"
   CardType: 0
   Resources:
   - Resource: 1
-    Value: 1
-  - Resource: 4
     Value: 1

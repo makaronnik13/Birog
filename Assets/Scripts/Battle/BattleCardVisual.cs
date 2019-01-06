@@ -7,10 +7,11 @@ public class BattleCardVisual : CardVisual
     public RectTransform ResourcesSlot;
     public Image[] ColoringPanels;
 
-    public void Init(BattleCard card, bool show)
+    public void Init(BattleCardWrapper card, bool show)
     {
-        base.Init(card);
-        foreach (ResourcePair val in card.Resources)
+        base.Init(card.Card, card.Guid);
+
+        foreach (ResourcePair val in card.Card.Resources)
         {
             for (int i = 0; i < val.Value; i++)
             {
@@ -18,12 +19,11 @@ public class BattleCardVisual : CardVisual
                 resourceIcon.GetComponent<ResourceIcon>().Init(val.Resource, ResourcesSlot);
                 resourceIcon.transform.localRotation = Quaternion.identity;
             }
-
         }
 
         foreach (Image panel in ColoringPanels)
         {
-            panel.color = DefaultResources.GetCardColor(((BattleCard)card).CardType);
+            panel.color = DefaultResources.GetCardColor(((BattleCard)card.Card).CardType);
         }
     }
 }

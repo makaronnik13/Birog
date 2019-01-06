@@ -6,6 +6,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Card", menuName = "Cards/EventCard", order = 1)]
 public class EventCard : ScriptableObject, ICard
 {
+    public int Id;
     public string CardName;
     public Sprite Image;
     public string Description;

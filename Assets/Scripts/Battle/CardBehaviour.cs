@@ -3,18 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CardBehaviour : MonoBehaviour {
-
+public class CardBehaviour : MonoBehaviour
+{
+    private CardCollider _collider;
+    private static float _movementSpeed = 3000f;
+    private static float _rotationSpeed = 3000f;
     private Billboard _billboard;
-    private static float _movementSpeed = 0.1f;
-    private static float _scaleSpeed = 1f;
-
     private bool _focused = false;
-
- 
     private bool _open = true;
-    private Action _callback;
+    private Action _callback = ()=>{};
 
+    public CardsLayout Parent;
+   
     public bool Open
     {
         get
@@ -26,11 +26,9 @@ public class CardBehaviour : MonoBehaviour {
             if (_open!=value)
             {
                 _open = value;
-                Reposition();
             }
         }
     }
-
     public bool Focused
     {
         get
@@ -45,10 +43,8 @@ public class CardBehaviour : MonoBehaviour {
             }
             _billboard.enabled = value;
             _focused = value;
-            Reposition();
         }
     }
-
     public Vector2 Size
     {
         get
@@ -57,19 +53,12 @@ public class CardBehaviour : MonoBehaviour {
         }
     }
 
-    private void Reposition()
-    {
-        CardsLayout layout = GetComponentInParent<CardsLayout>();
-        if (layout)
-        {
-            Reposition(layout);
-        }
-    }
 
     private void Start()
     {
-        GetComponentInChildren<CardCollider>().OnClicked += CardClicked;
-        GetComponentInChildren<CardCollider>().OnFocusChanged += FocusChanged;
+        _collider = GetComponentInChildren<CardCollider>();
+        _collider.OnClicked += CardClicked;
+        _collider.OnFocusChanged += FocusChanged;
         _billboard = gameObject.AddComponent<Billboard>();
         _billboard.enabled = false;
     }
@@ -77,17 +66,6 @@ public class CardBehaviour : MonoBehaviour {
     private void FocusChanged(bool val)
     {
         Focused = val;
-
-        /*
-        if (val)
-        {
-            CardsLayoutManager.Instance.FocusedCard = this;
-        }
-        else
-        {
-            CardsLayoutManager.Instance.FocusedCard = null;
-        }
-        */
     }
 
     private void CardClicked()
@@ -95,12 +73,7 @@ public class CardBehaviour : MonoBehaviour {
         
     }
 
-    public void Reposition(CardsLayout layout, Action callback = null)
-    {
-        Vector3 scale = Vector3.one;
- 
-        MoveCardTo(layout, callback);
-    }
+
 
     public Vector3 GetPosition(CardsLayout layout)
     {
@@ -122,72 +95,39 @@ public class CardBehaviour : MonoBehaviour {
         return layout.GetRotation(this);
     }
 
-    public void MoveCardTo(CardsLayout layout, Action callback = null)
-    {
-        if (transform.parent != null && transform.parent.GetComponent<CardsLayout>())
-        {
-           // transform.parent.GetComponent<CardsLayout>().RemoveCardFromLayout(this);
-        }
-
-        //layout.AddCardToLayout(this);
-        MoveCardTo(layout, Vector3.one, callback);
-    }
-
-    private void MoveCardTo(CardsLayout parent, Vector3 localScale, Action callback = null)
-    {
-        Vector3 localPosition = GetPosition(parent);
-        Quaternion localRotation = GetRotation(parent);
-
-        StopAllCoroutines();
-        StartCoroutine(MoveCardToCoroutine(parent.transform, localPosition, localRotation, localScale, callback));
-    }
-
+   
     private void OnDestroy()
     {
-        if (GetComponentInParent<CardsLayout>())
+        if (Parent)
         {
-            GetComponentInParent<CardsLayout>().RemoveCardFromLayout(this);
+            Parent.RemoveCardFromLayout(this);
         }
     }
 
-    private IEnumerator MoveCardToCoroutine(Transform parent, Vector3 localPosition, Quaternion localRotation, Vector3 localScale, Action callback = null)
+    private void Update()
     {
-        if (callback!=null)
+        if (Parent!=null)
         {
-            _callback = callback;
-        }
-       
-        transform.SetParent(parent);
-        float time = 0.0f;
-        float speed = Mathf.Max(_movementSpeed, _scaleSpeed);
+            Vector3 aimPos = Vector3.MoveTowards(transform.localPosition, GetPosition(Parent), _movementSpeed * Time.deltaTime);
+            Quaternion aimRot = Quaternion.RotateTowards(transform.localRotation, GetRotation(Parent), _rotationSpeed * Time.deltaTime);
 
-        while (time < speed)
-        {
-            if (time < _scaleSpeed)
+            if (transform.localPosition == aimPos)
             {
-                transform.localScale = Vector3.Lerp(transform.localScale, localScale, time / _scaleSpeed);
+                if (_callback != null)
+                {
+                    _callback.Invoke();
+                    _callback = null;
+                }
             }
 
-            if (time < _movementSpeed)
-            {
-                transform.localPosition = Vector3.Lerp(transform.localPosition, localPosition, time / _movementSpeed);
-            }
-
-            transform.localRotation = Quaternion.Lerp(transform.localRotation, localRotation, time / speed);
-            time += Time.deltaTime;
-            yield return new WaitForSeconds(Time.deltaTime);
+            transform.localPosition = aimPos;
+            transform.localRotation= aimRot;
         }
+    }
 
-
-        transform.localPosition = localPosition;
-        transform.localRotation = localRotation;
-        transform.localScale = localScale;
-
-        if (_callback != null)
-        {
-            Debug.Log("With callback!");
-            _callback.Invoke();
-            _callback = null;
-        }
+    public void AddCallback(Action callback)
+    {
+        Debug.Log("add callback");
+        _callback += callback;
     }
 }

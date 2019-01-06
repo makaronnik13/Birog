@@ -19,7 +19,6 @@ public class ClassChooser : MonoBehaviour {
         {
             __currentClass = value;
 
-            Debug.Log(__currentClass);
 
             if (value >= DefaultResources.AllClasses.Length)
             {
@@ -34,6 +33,8 @@ public class ClassChooser : MonoBehaviour {
             //update ui
             ClassName.text = DefaultResources.AllClasses[__currentClass].BattlerName;
             ClassHp.text = DefaultResources.AllClasses[__currentClass].Hp+"";
+            ClassArmor.text = DefaultResources.AllClasses[__currentClass].Armor + "";
+            ClassInitiative.text = DefaultResources.AllClasses[__currentClass].Initiative+"";
             ClassDescription.text = DefaultResources.AllClasses[__currentClass].Description;
             ClassImage.sprite = DefaultResources.AllClasses[__currentClass].BattlerImage;
 
@@ -46,7 +47,7 @@ public class ClassChooser : MonoBehaviour {
     }
 
     public TextMeshProUGUI ClassName;
-    public TextMeshProUGUI ClassHp;
+    public TextMeshProUGUI ClassHp, ClassArmor, ClassInitiative;
     public TextMeshProUGUI ClassDescription;
     public Image ClassImage;
 

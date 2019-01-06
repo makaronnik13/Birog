@@ -11,29 +11,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be74b70e01605af47b0f5e8491505341, type: 3}
   m_Name: En1_9
   m_EditorClassIdentifier: 
+  Id: 8
   CardName: test encounter
   Description: here is sample text sample text sample text sample text sample text
     sample text sample text sample text sample text sample text sample text sample
     text
   Image: {fileID: 21300016, guid: 22f8191eb4ec4df4db0c22110859a039, type: 3}
   Variants:
-  - Description: 
+  - Description: V1
     VariantCost:
       Effect: 0
       Type: 0
-      Resources: 
+      Resources: 040000000400000000000000
       CardTypes: 
       Cards: []
     Effects: []
-  - Description: 
+  - Description: V2
     VariantCost:
       Effect: 0
       Type: 0
-      Resources: 
+      Resources: 0100000002000000
       CardTypes: 
       Cards: []
     Effects: []
-  - Description: 
+  - Description: V3
     VariantCost:
       Effect: 0
       Type: 0

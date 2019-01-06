@@ -70,7 +70,6 @@ namespace Photon.Pun.Demo.PunBasics
 			// this makes sure we can use PhotonNetwork.LoadLevel() on the master client and all clients in the same room sync their level automatically
 			PhotonNetwork.AutomaticallySyncScene = true;
             NameInputField.text = "Игрок" + UnityEngine.Random.Range(0,999);
-
         }
 
 		#endregion

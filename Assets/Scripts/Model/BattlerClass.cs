@@ -6,6 +6,8 @@ public class BattlerClass : ScriptableObject
     public string BattlerName;
     public Sprite BattlerImage;
     public int Hp;
+    public int Armor;
+    public int Initiative;
     public string Description;
     public BattleCard[] Deck;
 }
